@@ -23,4 +23,4 @@ class TaskCreateResponse(TaskCreate):
     id: int
 
     class Config:
-        orm_mode = True
+        orm_mode = True # TaskCreateResponse が暗黙的にORMを受け取り、レスポンススキーマに変換する意味
