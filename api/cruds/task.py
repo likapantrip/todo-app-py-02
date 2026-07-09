@@ -1,4 +1,8 @@
+from typing import List, Tuple
+
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.engine import Result
 
 import api.models.task as task_model
 import api.schemas.task as task_schema
@@ -18,3 +22,16 @@ async def create_task(
     await db.refresh(task)
     # 作成したタスクを返す
     return task
+
+# タスクの一覧を取得する非同期関数
+async def get_tasks_with_done(db: AsyncSession) -> List[Tuple[int, str, bool]]:
+    result: Result = await (
+        db.execute(
+            select(
+                task_model.Task.id,
+                task_model.Task.title,
+                task_model.Done.id.isnot(None).label("done"),
+            ).outerjoin(task_model.Done)
+        )
+    )
+    return result.all()
